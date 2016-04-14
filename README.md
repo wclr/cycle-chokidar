@@ -10,25 +10,23 @@ https://github.com/paulmillr/chokidar#methods--events
 Events api has main method `on` (or `events` as alias) which takes event name and produces stream of this events:
 ```js
   watcher
-    .events('addDir')
-    .map(([path, details])) // produces array of arguments passed to `chokidar watcher` event handler callback.
+    .on('addDir')
+    .map(([path, details])) // get array of arguments passed to `chokidar watcher` event handler callback.
     ...
 ```
 
 also there is `watcher.all()` shortcut for `all` events.
 
-You may send instructions to driver: in form like `{add: 'some/path/to/add'}`, there is two methods you probably want to use: 
-`add`, `unwatch`. 
+You may send instructions to driver: in the form like `{add: 'some/path/to/add'}`, there is two methods you may use here: 
+`add` and `unwatch`. 
 
-`close()` on created `watcher` instance will be executed on driver `dispose`. 
-
-You can also send instruction `getWatched` to driver, and get response on `watcher.getWatch`: 
+You can also send instruction `getWatched` to driver, and it will push result into `watcher.getWatched` stream: 
 
 ```js  
   const main = ({watcher}) => {
     return {
-      watcher: O.of('getWatch'),
-      log: watcher.getWatch
+      watcher: O.of('getWatched'),
+      log: watcher.getWatched
     }
   }
   run(main, {
@@ -39,6 +37,13 @@ You can also send instruction `getWatched` to driver, and get response on `watch
       })
     }
   })
+```
+
+On `dispose` driver will execute `close()` on created `watcher`.
+
+### Install
+```bash
+npm install cycle-chokidar
 ```
 
 ### Tests

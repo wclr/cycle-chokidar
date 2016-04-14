@@ -4,17 +4,17 @@ import {Observable, Subject} from 'rx'
 export const makeWatcherDriver = (path, options = {}) => {
   const watcher = chokidar.watch(path, options)
   const getWatchedSubject = new Subject()
-  return (command$) => {
-    command$.forEach((command) => {
-      if (command == 'getWatched'){
+  return (instruction$) => {
+    instruction$.forEach((instruction) => {
+      if (instruction === 'getWatched'){
         return getWatchedSubject.onNext(watcher.getWatched())
       }
-      var method = Object.keys(command)
-        .filter(key => typeof watcher[key] === 'function')[0]
+      var method = Object.keys(instruction)
+        .filter(key => key === 'add' || key === 'unwatch')[0]
       if (!method){
-        throw new Error(`No valid watcher method in command`)
+        throw new Error(`Instruction does not contain valid method`)
       }
-      watcher[method](command[method])
+      watcher[method](instruction[method])
     })
     var events = (event) =>
         Observable.fromEventPattern(handler =>
